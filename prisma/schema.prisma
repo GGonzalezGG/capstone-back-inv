@@ -13,3 +13,80 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id       String    @id @default(cuid())
+  email    String    @unique
+  name     String
+  password String // Se guarda hasheada
+  role     Role      @default(NURSE)
+  requests Request[]
+  isActive Boolean   @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  NURSE
+  MANAGER
+  ADMIN // Para la secretaria
+}
+
+model Patient {
+  id       String    @id @default(cuid())
+  name     String
+  rut      String    @unique
+  requests Request[]
+  isActive Boolean   @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Item {
+  id                String        @id @default(cuid())
+  name              String        @unique
+  description       String?
+  category          String
+  quantityInStock   Int
+  lowStockThreshold Int           @default(10)
+  expiryDate        DateTime?
+  requestLines      RequestLine[]
+  isActive          Boolean       @default(true) //Para "eliminar" productos sin borrar datos históricos
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Request {
+  id           String        @id @default(cuid())
+  status       RequestStatus @default(PENDING)
+  requester    User          @relation(fields: [requesterId], references: [id])
+  requesterId  String
+  patient      Patient       @relation(fields: [patientId], references: [id])
+  patientId    String
+  requestLines RequestLine[] // Los insumos de esta petición
+  completedAt  DateTime? // Fecha en que se retira
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RequestLine {
+  id        String  @id @default(cuid())
+  request   Request @relation(fields: [requestId], references: [id])
+  requestId String
+  item      Item    @relation(fields: [itemId], references: [id])
+  itemId    String
+  quantity  Int
+
+  @@unique([requestId, itemId]) // Evita duplicados en una misma petición
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED // "Listo para retirar"
+  REJECTED
+  COMPLETED // "Retirado"
+}
