@@ -5,8 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -28,9 +27,9 @@ model User {
 }
 
 enum Role {
-  NURSE
-  MANAGER
-  ADMIN // Para la secretaria
+  NURSE //Para enfermeras que puedan hacer peticiones
+  MANAGER //Para secretaria que pueda administrar inventario
+  ADMIN  //Para dueñas que puedan administrar usuarios
 }
 
 model Patient {

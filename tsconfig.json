@@ -1,44 +1,23 @@
 {
-  // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
-    // File Layout
-    // "rootDir": "./src",
-    // "outDir": "./dist",
+    /* Opciones Base */
+    "target": "ES2020", // Compila a una versión moderna de JS
+    "module": "CommonJS", // Le dice a TS que GENERE CommonJS para Node.js
+    "lib": ["ES2020"],
+    "strict": true, // Habilita todas las comprobaciones estrictas de tipos
+    "skipLibCheck": true, // Evita revisar los .d.ts de las librerías
 
-    // Environment Settings
-    // See also https://aka.ms/tsconfig/module
-    "module": "nodenext",
-    "target": "esnext",
-    "types": [],
-    // For nodejs:
-    // "lib": ["esnext"],
-    // "types": ["node"],
-    // and npm install -D @types/node
+    /* Opciones de Módulos (La parte importante) */
+    "moduleResolution": "Node", // El estándar para Node.js
+    "esModuleInterop": true, // La "magia" para que 'import express from "express"' funcione
+    "allowSyntheticDefaultImports": true,
+    "verbatimModuleSyntax": false, // <-- LA CORRECCIÓN DIRECTA A TU ERROR
 
-    // Other Outputs
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
-
-    // Stricter Typechecking Options
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-
-    // Style Options
-    // "noImplicitReturns": true,
-    // "noImplicitOverride": true,
-    // "noUnusedLocals": true,
-    // "noUnusedParameters": true,
-    // "noFallthroughCasesInSwitch": true,
-    // "noPropertyAccessFromIndexSignature": true,
-
-    // Recommended Options
-    "strict": true,
-    "jsx": "react-jsx",
-    "verbatimModuleSyntax": true,
-    "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
-    "moduleDetection": "force",
-    "skipLibCheck": true,
-  }
+    /* Opciones del Proyecto */
+    "rootDir": "./src",
+    "outDir": "./dist", // Donde irá el código compilado
+    "sourceMap": true // Útil para debugging
+  },
+  "include": ["src/**/*"], // Solo compila lo que está en la carpeta 'src'
+  "exclude": ["node_modules"]
 }
