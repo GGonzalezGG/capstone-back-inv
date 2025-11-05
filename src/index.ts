@@ -2,6 +2,7 @@ import express, { Application, Request, Response, NextFunction } from "express";
 import "dotenv/config"; // Asegúrate de cargar .env primero
 import { globalErrorHandler } from "./api/middlewares/globalErrorHandler.middleware";
 import authRoutes from "./api/routes/auth.routes";
+import inventoryRoutes from "./api/routes/inventory.routes";
 import AppError from "./utils/AppError"; // Importar AppError para el 404
 
 // (Importa tus otras rutas aquí: inventoryRoutes, requestRoutes)
@@ -15,14 +16,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // Rutas de la API
 app.use("/api/v1/auth", authRoutes);
-// app.use('/api/v1/inventory', inventoryRoutes);
+app.use("/api/v1/inventory", inventoryRoutes);
 // app.use('/api/v1/requests', requestRoutes);
 
 // --- MANEJO DE RUTAS NO ENCONTRADAS (404) ---
 // Esto debe ir DESPUÉS de todas tus rutas exitosas
-//
-// CAMBIO: Usamos una RegExp /.*/ (coincidir con todo) en lugar de "/*"
-// para evitar el bug de 'path-to-regexp' en Express 5.
 app.all(/.*/, (req: Request, res: Response, next: NextFunction) => {
   next(
     new AppError(

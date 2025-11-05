@@ -7,11 +7,10 @@ import { protect } from "../middlewares/auth.middleware"; // Asegúrate de impor
 const router = Router();
 
 // POST /api/v1/auth/register
-// Usamos el middleware 'validate' para proteger la ruta
-router.post("/register", validate(registerSchema), register);
+router.post("/register", validate({ body: registerSchema }), register);
 
 // POST /api/v1/auth/login
-router.post("/login", validate(loginSchema), login);
+router.post("/login", validate({ body: loginSchema }), login);
 
 // RUTA DE PRUEBA:
 router.get("/me", protect, (req, res) => {
