@@ -54,4 +54,16 @@ export class InventoryRepository {
       data: { isActive: false },
     });
   }
+
+  async getLowStockCount(): Promise<number> {
+    return this.prisma.item.count({
+      where: {
+        isActive: true,
+        // Compara la cantidad en stock con el campo 'lowStockThreshold'
+        quantityInStock: {
+          lt: this.prisma.item.fields.lowStockThreshold,
+        },
+      },
+    });
+  }
 }

@@ -6,6 +6,7 @@ import inventoryRoutes from "./api/routes/inventory.routes";
 import AppError from "./utils/AppError"; // Importar AppError para el 404
 import requestRoutes from "./api/routes/request.routes";
 import patientRoutes from "./api/routes/patient.routes";
+import dashboardRoutes from "./api/routes/dashboard.routes";
 
 // (Importa tus otras rutas aquí: inventoryRoutes, requestRoutes)
 
@@ -21,6 +22,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/inventory", inventoryRoutes);
 app.use("/api/v1/requests", requestRoutes);
 app.use("/api/v1/patients", patientRoutes);
+app.use("/api/v1/dashboard", dashboardRoutes); // Importar rutas de dashboard
 
 // --- MANEJO DE RUTAS NO ENCONTRADAS (404) ---
 // Esto debe ir DESPUÉS de todas tus rutas exitosas
