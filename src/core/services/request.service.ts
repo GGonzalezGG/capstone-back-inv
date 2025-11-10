@@ -1,17 +1,26 @@
 import { Request, RequestStatus } from "@prisma/client";
 import { RequestRepository } from "../../data/repositories/request.repository";
 import { InventoryRepository } from "../../data/repositories/inventory.repository";
+import { PatientRepository } from "../../data/repositories/patient.repository";
+import { UserRepository } from "../../data/repositories/user.repository";
 import { CreateRequestDto } from "../../schemas/request.schema";
 import AppError from "../../utils/AppError";
+import { io } from "../../index"; // Importamos 'io' para emitir eventos de socket
+
 
 export class RequestService {
   private requestRepository: RequestRepository;
   private inventoryRepository: InventoryRepository;
+  private userRepository: UserRepository;
+  private patientRepository: PatientRepository;
 
   constructor() {
     this.requestRepository = new RequestRepository();
     // ¡Necesitamos el repositorio de inventario para verificar el stock!
     this.inventoryRepository = new InventoryRepository();
+
+    this.userRepository = new UserRepository();
+    this.patientRepository = new PatientRepository();
   }
 
   /**
@@ -36,8 +45,19 @@ export class RequestService {
       }
     }
 
+    const newRequest = await this.requestRepository.createRequest(data, requesterId)
+    const requester = await this.userRepository.findUserById(requesterId);
+    const patient = await this.patientRepository.findPatientById(data.patientId);
+
+    io.to("ADMIN_ROOM").emit("new_notification", {
+      id: newRequest.id,
+      type: "REQUEST",
+      title: "Nueva Petición Recibida",
+      message: `La enfermera ${requester?.name ?? 'desconocida'} ha creado una petición para ${patient?.name ?? 'desconocido'}.`,
+    });
+
     // 3. Si todo el stock está bien, crear la petición
-    return this.requestRepository.createRequest(data, requesterId);
+    return newRequest;
   }
 
   /**
@@ -71,10 +91,22 @@ export class RequestService {
           );
         }
 
+        const newStock = currentStock - requestedQuantity;
+
         // Actualizar el stock del insumo
         await this.inventoryRepository.updateItem(line.itemId, {
           quantityInStock: currentStock - requestedQuantity,
         });
+
+        if (newStock < line.item.lowStockThreshold && currentStock >= line.item.lowStockThreshold) {
+          // Emitir notificación de stock bajo
+          io.to("ADMIN_ROOM").emit("new_notification", {
+            id: line.itemId,
+            type: "LOW_STOCK",
+            title: "Alerta de Stock Bajo",
+            message: `El insumo '${line.item.name}' ha alcanzado un stock bajo: ${newStock} unidades restantes.`,
+          });
+        }
       }
     }
 

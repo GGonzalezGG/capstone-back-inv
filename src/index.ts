@@ -8,11 +8,23 @@ import requestRoutes from "./api/routes/request.routes";
 import patientRoutes from "./api/routes/patient.routes";
 import dashboardRoutes from "./api/routes/dashboard.routes";
 import userRoutes from "./api/routes/user.routes";
+import { createServer } from "http"; //imports para websockets
+import { Server } from "socket.io";
+import { initSocketServer } from "./socketServer"
 
 // (Importa tus otras rutas aquí: inventoryRoutes, requestRoutes)
 
 const app: Application = express();
 const port = process.env.PORT || 3001;
+
+const httpServer = createServer(app);
+// Exportamos 'io' para que los servicios puedan usarlo
+export const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:3000", // La URL de tu frontend (React/Next)
+    methods: ["GET", "POST"],
+  },
+});
 
 // Middlewares
 app.use(express.json()); // Para parsear JSON
@@ -25,6 +37,8 @@ app.use("/api/v1/requests", requestRoutes);
 app.use("/api/v1/patients", patientRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1/users", userRoutes);
+
+initSocketServer(io);
 
 // --- MANEJO DE RUTAS NO ENCONTRADAS (404) ---
 // Esto debe ir DESPUÉS de todas tus rutas exitosas
@@ -43,6 +57,6 @@ app.all(/.*/, (req: Request, res: Response, next: NextFunction) => {
 app.use(globalErrorHandler);
 
 // Iniciar el servidor
-app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
+httpServer.listen(port, () => {
+  console.log(`Servidor (y Socket.IO) corriendo en http://localhost:${port}`);
 });
