@@ -44,18 +44,3 @@ export const restrictTo = (...roles: Role[]) => {
     next();
   };
 };
-
-/*
- * Ejemplo de cómo usarlo en inventory.routes.ts:
- *
- * import { protect, restrictTo } from '../middlewares/auth.middleware.ts';
- *
- * // Esta ruta solo será accesible para ADMINS y MANAGERS que estén logueados
- * router.post(
- * '/',
- * protect,
- * restrictTo('ADMIN', 'MANAGER'),
- * createInventoryItemHandler
- * );
- *
- */

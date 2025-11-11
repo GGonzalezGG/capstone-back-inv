@@ -3,7 +3,7 @@ import { z } from "zod";
 // Schema base (campos comunes)
 const itemBaseSchema = z.object({
   name: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
-  description: z.string().optional(),
+  description: z.string().nullable().optional(),
   category: z.string().min(3, "La categoría es obligatoria"),
   quantityInStock: z.number().int().min(0, "La cantidad no puede ser negativa"),
   lowStockThreshold: z

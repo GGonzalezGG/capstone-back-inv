@@ -42,6 +42,7 @@ export class InventoryRepository {
       data: {
         ...data,
         expiryDate: data.expiryDate ? new Date(data.expiryDate) : undefined,
+        description: data.description ?? undefined,
       },
     });
   }

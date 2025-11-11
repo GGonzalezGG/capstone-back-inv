@@ -76,6 +76,7 @@ export class RequestRepository {
       orderBy: { createdAt: "desc" },
       include: {
         patient: true,
+        requester: true,
         requestLines: { include: { item: true } },
       },
     });
