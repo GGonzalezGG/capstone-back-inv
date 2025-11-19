@@ -11,6 +11,7 @@ import userRoutes from "./api/routes/user.routes";
 import { createServer } from "http"; //imports para websockets
 import { Server } from "socket.io";
 import { initSocketServer } from "./socketServer"
+import cors from "cors";
 
 // (Importa tus otras rutas aquí: inventoryRoutes, requestRoutes)
 
@@ -25,6 +26,10 @@ export const io = new Server(httpServer, {
     methods: ["GET", "POST"],
   },
 });
+
+app.use(cors({
+  origin: "http://localhost:3000"
+}));
 
 // Middlewares
 app.use(express.json()); // Para parsear JSON
