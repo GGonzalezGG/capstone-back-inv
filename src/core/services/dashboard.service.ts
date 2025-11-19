@@ -32,12 +32,15 @@ export class DashboardService {
     // O un método en el repositorio. Vamos a añadirlo al repositorio.
     const lowStockCount = await this.inventoryRepository.getLowStockCount();
 
-    // StatCard 2: Total de Insumos (activos)
+    //StatCard 2: Pronto a vencer
+    const expiringSoonCount = await this.inventoryRepository.getExpiringSoonCount();
+
+    // StatCard 3: Total de Insumos (activos)
     const totalItemsCount = await prisma.item.count({
       where: { isActive: true },
     });
 
-    // StatCard 3: Peticiones Pendientes (PENDING o APPROVED)
+    // StatCard 4: Peticiones Pendientes (PENDING o APPROVED)
     const pendingRequestsCount = await prisma.request.count({
       where: {
         status: { in: ["PENDING", "APPROVED"] },
@@ -83,6 +86,7 @@ export class DashboardService {
     return {
       stats: {
         lowStock: lowStockCount,
+        expiringSoon: expiringSoonCount,
         totalItems: totalItemsCount,
         pendingRequests: pendingRequestsCount,
       },

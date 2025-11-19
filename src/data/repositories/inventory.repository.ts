@@ -67,4 +67,21 @@ export class InventoryRepository {
       },
     });
   }
+
+  async getExpiringSoonCount(): Promise<number> {
+    const now = new Date();
+    const oneWeekLater = new Date();
+    oneWeekLater.setDate(now.getDate() + 7);
+
+    return this.prisma.item.count({
+      where: {
+        isActive: true,
+        quantityInStock: { gt: 0 }, // Solo contar si hay stock físico
+        expiryDate: {
+          gte: now,        // Mayor o igual a hoy (no vencidos aún)
+          lte: oneWeekLater // Menor o igual a una semana
+        },
+      },
+    });
+  }
 }
