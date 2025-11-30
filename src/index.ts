@@ -10,8 +10,10 @@ import dashboardRoutes from "./api/routes/dashboard.routes";
 import userRoutes from "./api/routes/user.routes";
 import { createServer } from "http"; //imports para websockets
 import { Server } from "socket.io";
-import { initSocketServer } from "./socketServer"
+import { initSocketServer } from "./socketServer";
 import cors from "cors";
+import cron from "node-cron";
+import { InventoryService } from "./core/services/inventory.service";
 
 // (Importa tus otras rutas aquí: inventoryRoutes, requestRoutes)
 
@@ -27,9 +29,11 @@ export const io = new Server(httpServer, {
   },
 });
 
-app.use(cors({
-  origin: "http://localhost:3000"
-}));
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+  })
+);
 
 // Middlewares
 app.use(express.json()); // Para parsear JSON
@@ -44,6 +48,18 @@ app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1/users", userRoutes);
 
 initSocketServer(io);
+
+// --- TAREAS PROGRAMADAS (CRON JOBS) ---
+const inventoryService = new InventoryService();
+
+// Se ejecuta todos los días a las 09:00 AM
+// Formato cron: "minuto hora dia-mes mes dia-semana"
+cron.schedule("0 9 * * *", () => {
+  console.log(
+    "Ejecutando tarea programada: Verificación diaria de vencimientos"
+  );
+  inventoryService.checkAndNotifyExpirations();
+}); // usar */30 * * * * * para cada 30 segundos (pruebas)
 
 // --- MANEJO DE RUTAS NO ENCONTRADAS (404) ---
 // Esto debe ir DESPUÉS de todas tus rutas exitosas

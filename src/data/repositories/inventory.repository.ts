@@ -78,8 +78,8 @@ export class InventoryRepository {
         isActive: true,
         quantityInStock: { gt: 0 }, // Solo contar si hay stock físico
         expiryDate: {
-          gte: now,        // Mayor o igual a hoy (no vencidos aún)
-          lte: oneWeekLater // Menor o igual a una semana
+          gte: now, // Mayor o igual a hoy (no vencidos aún)
+          lte: oneWeekLater, // Menor o igual a una semana
         },
       },
     });
